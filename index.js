@@ -9,6 +9,13 @@ const h3 = document.createElement('h3')
 h3.innerText = 'Double Click to View a Book'
 title.prepend(h3)
 
+const back = document.createElement('button')
+back.innerText = 'Go Back'
+title.append(back)
+
+back.addEventListener('click', () =>{
+    div.innerHTML = ""
+})
 
 //! API
 const getBooks = () =>
@@ -31,29 +38,45 @@ const renderBook = book => {
     list.append(li)
 
     li.addEventListener('dblclick', () => {
-        div.innerHTML = `
-        <h1>${book.title}</h1>
-        <img src="${book.img_url}" alt="">
-        <p>${book.description}</p>
-        <h3>People that love this book:</h3>
-        `
+        refresh(book)
 
-        const check = book.users.find(user=>user.id == 1)
+        const read = div.querySelector('#read')
+        const unlike = div.querySelector('#unlike')
+
+        read.addEventListener('click', () =>{
+            const check = book.users.find(user=>user.id == 1)
         if(check){
-            book.users = book.users.filter(user => user.id !== 1)
-        }else{
+            alert('You Already Read This Book')
+        } else{
             book.users.push({"id":1, "username":"You"})
             updateBook(book)
-        }
+            refresh(book)
+        }})
 
-        book.users.forEach(function (user) {
-            div.innerHTML += `
-            <h3>${user.username}</h3>
-            `
-        })
+        unlike.addEventListener('click', () =>{
+            const checking = book.users.find(user=>user.id == 1)
+        if(checking){
+            book.users = book.users.filter(user => user.id !== 1)
+            updateBook(book)
+            refresh(book)       
+        }})
     })
 }
 
+
+const refresh = book => {
+    div.innerHTML = `
+        <h1>${book.title}</h1>
+        <img src="${book.img_url}" alt="">
+        <p>${book.description}</p>
+        <button id=read >Read Book</button>
+        <button id=unlike >UnLike Book</button>
+        <h3>People that have read this book:</h3>`
+
+    book.users.forEach(user => {
+        div.innerHTML += `<h3>${user.username}</h3>`
+    })
+}
 
 const renderBooks = books => {
     books.forEach(renderBook)
